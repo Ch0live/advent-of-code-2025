@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-const input = readFileSync(join(__dirname, "example.txt"), "utf8").trim().split("\n");
+const input = readFileSync(join(__dirname, "input.txt"), "utf8").trim().split("\n");
 console.log("Input length:", input.length);
 
 // --- Initial thoughts ---
@@ -20,19 +20,20 @@ const extractNumber = (input: string): number => {
 };
 
 let position = 50;
+let sol = 0;
 let i = 0;
 
 for (let row of input) {
     if(isRight(row)) {
-        position += extractNumber(row);
+        position = (position + extractNumber(row)) % 100;
     } else {
-        position -= extractNumber(row);
+        position = (position + (100 - extractNumber(row))) % 100;
     }
+    sol += position === 0 ? 1 : 0;
     if (i < 25) {
         console.log(`Row: ${row}, Pos: ${position}`);
     }
     i++;
 }
 
-const sol = position % 100;
 console.log(sol);
