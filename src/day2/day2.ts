@@ -13,19 +13,28 @@ PART 1
 
 PART 2
 --- Initial thoughts ---
-- for each left pair element (lpe)
-  - split on (length / 2 - n) where n decreases to 1, take first half
-  - if first half repeats after index, success, else move on
+Lets switch to array indexes, maybe do some recursion too
+- for an input, split into a list of chars
+- create n where n = Math.floor(input.length / 2);
+- for n where n > 0 and n-- each iteration
+  - for m = 0 where m < length
+    - if input.slice(m, n) === input.slice(n, n**m)
+
+
+What about splitting the string on the range we're looking at?
+for an input
+- for n where n = 0, n < Math.floor(length / 2), n++
+  - split and append all subsections (input.match(/.{1,n}/g))
+  - if all elements are equal, return true
 */
 
 const containsARepeatingSequence = (input: string): boolean => {
-    let n = Math.floor(input.length / 2);
-    while (n > 0) {
-        console.log(`Matching pairs: ${input.slice(0, n)} -- ${input.slice(n, 2*n)}`);
-        if (input.slice(0, n) === input.slice(n, 2*n)) {
-            return true;
-        }
-        n--;
+    for (let n = 1; n < input.length; n++) {
+        console.log(input);
+        // console.log(input.match(/.{1,2}/g));
+        const regex = String("/.{1," + String(n) + "}/g");
+        const subSetOfInput = input.match(regex);
+        console.log(subSetOfInput);
     }
     return false;
 };
@@ -43,7 +52,7 @@ for (let i = 0; i < input.length; i++) {
     const end = Number(rightPairElement);
 
     while (j <= end) {
-        if (containsARepeatingSequence(String(j))) {
+        if (containsARepeatingSequence(leftPairElement)) {
             sol = sol + j;
             console.log(`Match! sol: ${sol}`);
         }
