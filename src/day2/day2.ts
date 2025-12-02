@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-const input = readFileSync(join(__dirname, "input.txt"), "utf8").trim().split(",");
+const input = readFileSync(join(__dirname, "example.txt"), "utf8").trim().split(",");
 
 /*
 PART 1
@@ -10,19 +10,24 @@ PART 1
 - for each left pair element (lpe)
   - split in half, check if each half is the same value. If so, sol = sol + lpe
   - lpe++
+
+PART 2
+--- Initial thoughts ---
+- for each left pair element (lpe)
+  - split on (length / 2 - n) where n decreases to 1, take first half
+  - if first half repeats after index, success, else move on
 */
 
-const isATwoElementRepeatingSequence = (input: string): boolean => {
-    const length = input.length;
-    if (length % 2 === 1) {
-        return false;
-    } else {
-        const isPair = input.slice(0, length/2) === input.slice(-(length/2));
-        if (isPair) {
-            console.log(`Match: ${input.slice(0, length/2)} -- ${input.slice(-(length/2))}`);
+const containsARepeatingSequence = (input: string): boolean => {
+    let n = Math.floor(input.length / 2);
+    while (n > 0) {
+        console.log(`Matching pairs: ${input.slice(0, n)} -- ${input.slice(n, 2*n)}`);
+        if (input.slice(0, n) === input.slice(n, 2*n)) {
+            return true;
         }
-        return isPair;
+        n--;
     }
+    return false;
 };
 
 let sol = 0;
@@ -36,12 +41,11 @@ for (let i = 0; i < input.length; i++) {
 
     let j = Number(leftPairElement);
     const end = Number(rightPairElement);
-    let match = false;
 
     while (j <= end) {
-        if (isATwoElementRepeatingSequence(String(j))) {
-            
+        if (containsARepeatingSequence(String(j))) {
             sol = sol + j;
+            console.log(`Match! sol: ${sol}`);
         }
         j++;
     }
