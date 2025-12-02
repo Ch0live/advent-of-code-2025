@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-const input = readFileSync(join(__dirname, "example.txt"), "utf8").trim().split(",");
+const input = readFileSync(join(__dirname, "input.txt"), "utf8").trim().split(",");
 
 /*
 PART 1
@@ -29,14 +29,17 @@ for an input
 */
 
 const containsARepeatingSequence = (input: string): boolean => {
+    let allMatchInOneSequence = false;
     for (let n = 1; n < input.length; n++) {
-        console.log(input);
-        // console.log(input.match(/.{1,2}/g));
-        const regex = String("/.{1," + String(n) + "}/g");
-        const subSetOfInput = input.match(regex);
-        console.log(subSetOfInput);
+        const subSetOfInput = input.match(new RegExp(`.{1,${n}}`, 'g'));
+        // console.log(subSetOfInput);
+        if (subSetOfInput?.every(el => el === subSetOfInput[0])) {
+            allMatchInOneSequence = true;
+            console.log(`Match! subSetOfInput: ${subSetOfInput}`);
+            break;
+        }
     }
-    return false;
+    return allMatchInOneSequence;
 };
 
 let sol = 0;
@@ -46,15 +49,14 @@ for (let i = 0; i < input.length; i++) {
     let leftPairElement = elementPair[0];
     let rightPairElement = elementPair[1];
     
-    console.log(`elementPair: ${elementPair}, \t\t leftPairElement: ${leftPairElement}, \t\t rightPairElement: ${rightPairElement}`);
+    console.log(`elementPair: ${elementPair} \t leftPairElement: ${leftPairElement} \t rightPairElement: ${rightPairElement}`);
 
     let j = Number(leftPairElement);
     const end = Number(rightPairElement);
 
     while (j <= end) {
-        if (containsARepeatingSequence(leftPairElement)) {
+        if (containsARepeatingSequence(String(j))) {
             sol = sol + j;
-            console.log(`Match! sol: ${sol}`);
         }
         j++;
     }
