@@ -32,7 +32,6 @@ const containsARepeatingSequence = (input: string): boolean => {
     let allMatchInOneSequence = false;
     for (let n = 1; n < input.length; n++) {
         const subSetOfInput = input.match(new RegExp(`.{1,${n}}`, 'g'));
-        // console.log(subSetOfInput);
         if (subSetOfInput?.every(el => el === subSetOfInput[0])) {
             allMatchInOneSequence = true;
             console.log(`Match! subSetOfInput: ${subSetOfInput}`);
