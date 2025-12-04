@@ -28,13 +28,23 @@ So
 - Find furthest left highest char
 - split on it
 - In new section to the right of the split, repeat the above algorithm
+
+It's 10pm, I looked up a solution. Turns out I'm almost there.
+Just need to allow x spaces to the right of the highest char where 
+x is the remaining digits to be found.
 */
 
 const numberOfDigits = 12;
 let sol = 0;
 
-const getFurthestLeftIndexOfNum = (num: string, row: string, start: number): number | undefined => {
-    for (let i = start; i < row.length; i++) {
+const inRange = (i: number, row: string, digitsLeft: number): boolean => {
+    return row.length - i - digitsLeft != 0
+        ? i + digitsLeft < row.length
+        : i < row.length;
+}
+
+const getFurthestLeftIndexOfNum = (num: string, row: string, start: number, digitsLeft: number): number | undefined => {
+    for (let i = start; inRange(i, row, digitsLeft); i++) {
         // console.log(`row[i] ${row[i]} === ${num} num?`);
         if(row[i] === num) {
             // console.log(`return i of ${i}`);
@@ -45,9 +55,9 @@ const getFurthestLeftIndexOfNum = (num: string, row: string, start: number): num
     return undefined;
 };
 
-const getHighestNextDigitIndex = (row: string, startingIdx: number): number => {
+const getHighestNextDigitIndex = (row: string, startingIdx: number, digitsLeft: number): number => {
     for (let num = 9; num > 0; num--) {
-        const idxOfFurthestLeftValue: number | undefined = getFurthestLeftIndexOfNum(String(num), row, startingIdx);
+        const idxOfFurthestLeftValue: number | undefined = getFurthestLeftIndexOfNum(String(num), row, startingIdx, digitsLeft);
         if (idxOfFurthestLeftValue === undefined) {
             // console.log(`No ${num} found in row`);
         } else {
@@ -61,12 +71,14 @@ const getHighestNextDigitIndex = (row: string, startingIdx: number): number => {
 const getHighestNumberIn = (row: string): string => {
     let highestNum = "";
     let idx = 0;
+    let digitsLeft = 12;
     for (let i = 0; i < numberOfDigits; i++) {
         console.log(`find getHighestNextDigitIndex for row ${row} and idx ${idx}`);
-        const idxOfHighest = getHighestNextDigitIndex(row, idx);
+        const idxOfHighest = getHighestNextDigitIndex(row, idx, digitsLeft);
         highestNum = highestNum + String(row[idx]);
         idx = idxOfHighest + 1;
-        console.log(`highestNum ${highestNum}\tidx ${idx}`);
+        digitsLeft--;
+        console.log(`highestNum ${highestNum}\tidx ${idx}\tdigitsLeft ${digitsLeft}`);
     }
     return highestNum;
 };
