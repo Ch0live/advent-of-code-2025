@@ -1,7 +1,8 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-const input = readFileSync(join(__dirname, "example.txt"), "utf8").trim().split("\r\n");
+const input = readFileSync(join(__dirname, "input.txt"), "utf8").trim().split("\r\n");
+console.log(input);
 
 /*
 PART 1
@@ -32,55 +33,45 @@ So
 It's 10pm, I looked up a solution. Turns out I'm almost there.
 Just need to allow x spaces to the right of the highest char where 
 x is the remaining digits to be found.
+
+Cracked it :100:
 */
 
 const numberOfDigits = 12;
 let sol = 0;
 
-const inRange = (i: number, row: string, digitsLeft: number): boolean => {
-    return row.length - i - digitsLeft != 0
-        ? i + digitsLeft < row.length
-        : i < row.length;
-}
-
-const getFurthestLeftIndexOfNum = (num: string, row: string, start: number, digitsLeft: number): number | undefined => {
-    for (let i = start; inRange(i, row, digitsLeft); i++) {
-        // console.log(`row[i] ${row[i]} === ${num} num?`);
-        if(row[i] === num) {
-            // console.log(`return i of ${i}`);
-            return i;
+const getMaxValueIndex = (str: string): number => {
+    let max = 0;
+    let maxIdx = -1;
+    for (let i = 0; i < str.length; i++) {
+        if (Number(str[i]) > max) {
+            max = Number(str[i]);
+            maxIdx = i;
         }
+        // console.log(`Number(str[i]) ${Number(str[i])} > ${max}?, max is ${max} maxIdx ${maxIdx}`);
     }
-    // console.log(`none found return undefined`);
-    return undefined;
+    return maxIdx;
 };
 
-const getHighestNextDigitIndex = (row: string, startingIdx: number, digitsLeft: number): number => {
-    for (let num = 9; num > 0; num--) {
-        const idxOfFurthestLeftValue: number | undefined = getFurthestLeftIndexOfNum(String(num), row, startingIdx, digitsLeft);
-        if (idxOfFurthestLeftValue === undefined) {
-            // console.log(`No ${num} found in row`);
-        } else {
-            // console.log(`Highest num found with idx ${idxOfFurthestLeftValue}`);
-            return idxOfFurthestLeftValue;
-        }
-    }
-    throw Error("Impossible state reached - no numbers found to right of startingIdx");
-}
-
 const getHighestNumberIn = (row: string): string => {
-    let highestNum = "";
-    let idx = 0;
-    let digitsLeft = 12;
-    for (let i = 0; i < numberOfDigits; i++) {
-        console.log(`find getHighestNextDigitIndex for row ${row} and idx ${idx}`);
-        const idxOfHighest = getHighestNextDigitIndex(row, idx, digitsLeft);
-        highestNum = highestNum + String(row[idx]);
-        idx = idxOfHighest + 1;
+    let digitsLeft = numberOfDigits;
+    let largest = "";
+    let nextCharIdx = 0;
+
+    for (let i = 0; i <= row.length && digitsLeft > 0; i++) {
+        const start = nextCharIdx;
+        const end = row.length - digitsLeft + 1;
+        // console.log(`row.length ${row.length}, digitsLeft ${digitsLeft}, end ${end}, row.slice(start, end) ${row.slice(start, end)}`);
+        nextCharIdx = getMaxValueIndex(row.slice(start, end)) + nextCharIdx;
+        // console.log(`nextCharIdx ${nextCharIdx}`)
+        largest = largest + String(row[nextCharIdx]);
         digitsLeft--;
-        console.log(`highestNum ${highestNum}\tidx ${idx}\tdigitsLeft ${digitsLeft}`);
+        // console.log(`For ${row.slice(start, end)}, highest is ${row[nextCharIdx]}. Largest is ${largest}, ${digitsLeft} digits left`);
+        nextCharIdx++;
+        i = nextCharIdx;
     }
-    return highestNum;
+
+    return largest;
 };
 
 for (let i = 0; i < input.length; i++) {
