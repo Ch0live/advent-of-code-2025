@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-const input = readFileSync(join(__dirname, "example.txt"), "utf8").trim().split("\r\n");
+const input = readFileSync(join(__dirname, "input.txt"), "utf8").trim().split("\r\n");
 
 /*
 PART 1
@@ -16,8 +16,12 @@ Seems like a simple update
 - Update my grid object to replace any @ that can be picked up with a .
 
 Won't lie - I feel like just looping the method I have like an arbitrarily 
-large number of times (say, 500) and printing the solution each iteration. 
+large number of times (say, 100) and printing the solution each iteration. 
 Eventually it'll stop growing and settle to the solution.
+
+Spotted halfway through that you need to remove each batch at once. 
+Otherwise a small area with no rolls can eat the rest of the page away. 
+Sneaky that, the example worked before I spotted it.
 */
 
 const createGrid = (input: string[]) => {
@@ -46,7 +50,6 @@ const surroundingRollsGreaterThan = (limit: number, grid: string[], coords: numb
     se = i < grid.length - 1 && j < grid[i].length - 1
         ? grid[i + 1][j + 1] === "@"
         ? 1 : 0 : 0;
-    // if (i < grid.length - 1 && j < grid[i].length - 1) { console.log(`SE checked, was ${grid[i+1][j+1]} in ij ${i+1}${j+1}`); }
     s = i < grid.length - 1
         ? grid[i + 1][j] === "@"
         ? 1 : 0 : 0;
@@ -66,21 +69,23 @@ const surroundingRollsGreaterThan = (limit: number, grid: string[], coords: numb
     return (n + ne + e + se + s + sw + w + nw) < 4;
 }
 
-const grid = createGrid(input);
-let sol = 0;
+let grid = createGrid(input);
 console.log("Grid:");
 console.log(input);
 
+let sol = 0;
 let k = 0;
+let newGrid = structuredClone(grid);
 while (k < 100) {
     for (let i = 0; i < input.length; i++) {
         for (let j = 0; j < input.length; j++) {
             if (coordIsOnARoll(grid, [i, j]) && surroundingRollsGreaterThan(4, grid, [i, j])) {
                 sol++;
-                grid[i][j] = ".";
+                newGrid[i][j] = ".";
             }
         }
     }
     k++;
     console.log(`Sol is ${sol} after ${k} iteration(s)`);
+    grid = structuredClone(newGrid);
 }
